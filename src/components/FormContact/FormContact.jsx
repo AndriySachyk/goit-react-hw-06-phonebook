@@ -1,38 +1,49 @@
-import PropTypes from 'prop-types';
-
-import { useState } from "react";
+// import PropTypes from 'prop-types';
+import Notiflix from 'notiflix';
 import { Form, ButtonForm } from './FormContact-style';
+import { useDispatch, useSelector } from 'react-redux';
+import { getContacts } from 'redux/selectors';
+import { nanoid } from '@reduxjs/toolkit';
+import { addContact } from 'redux/contactsSlice';
 
 
-export const FormContact = ({createContact}) => {
+export const FormContact = () => {
 
- 
 
-const [name, setName]= useState('')
-const [number, setNumber]= useState('')
+const dispatch = useDispatch()   
+const contacts = useSelector(getContacts)
 
-  
-  
-const handleChange = ({ target : {name , value}}) => {
-  if (name === 'name') setName(value)
-  if (name === 'number') setNumber(value)
-};
-  
   
 const handleSubmit = event => {
 event.preventDefault();
 
-  const data = {
-  name, number
+  const form = event.target
+
+  const newContact = {
+    name: form.elements.name.value,
+    number:form.elements.number.value,
+    id: nanoid()
 }
+
+if (contacts.find(
+  contact => contact.name.toLowerCase() === newContact.name.toLowerCase()
+  )
+  ) {
+    return Notiflix.Notify.failure(`${newContact.name} is already in contacts`);
+  }
   
-createContact(data)
-  
-  setName('')
-  setNumber('')
+  // console.log('newcontact', newContact)
+
+
+dispatch(addContact(newContact))
+  form.reset()
   
 };
   
+
+
+
+
   
   return (
     <>
@@ -45,8 +56,6 @@ createContact(data)
           pattern="^[a-zA-Zа-яА-Я]+(([' -][a-zA-Zа-яА-Я ])?[a-zA-Zа-яА-Я]*)*$"
           title="Name may contain only letters, apostrophe, dash and spaces. For example Adrian, Jacob Mercer, Charles de Batz de Castelmore d'Artagnan"
           required
-          onChange={handleChange}
-          value={name}
           />
       <label htmlFor="number">Number</label>
       <input
@@ -56,8 +65,6 @@ createContact(data)
           pattern="\+?\d{1,4}?[-.\s]?\(?\d{1,3}?\)?[-.\s]?\d{1,4}[-.\s]?\d{1,4}[-.\s]?\d{1,9}"
           title="Phone number must be digits and can contain spaces, dashes, parentheses and can start with +"
           required
-          onChange={handleChange}
-          value={number}
           />
       <ButtonForm type="submit">Add Contact</ButtonForm>
       </Form>
@@ -88,6 +95,6 @@ createContact(data)
       // };
     
     
-    FormContact.propTypes = {
-      createContact: PropTypes.func.isRequired,
-}
+//     FormContact.propTypes = {
+//       createContact: PropTypes.func.isRequired,
+// }

@@ -1,10 +1,19 @@
-import PropTypes from 'prop-types';
+// import PropTypes from 'prop-types';
+import { useDispatch, useSelector } from 'react-redux';
 import { BoxFilter, LableFilter, InputFilter} from './FilterContact-style';
+import { getFilter } from 'redux/selectors';
+import { filterContact } from 'redux/filterSlice';
 
 
 
-export const Filter= ({handleChangeFilter, value})=>{
+export const Filter= ()=>{
+    const filter = useSelector(getFilter)
+    const dispatch = useDispatch()
 
+
+   const handleChange = (even)=>{
+        dispatch(filterContact(even.target.value))
+    }
 
 return (
     <>
@@ -13,9 +22,9 @@ return (
             <InputFilter
                 type="text"
                 name="filter"
-                onChange={handleChangeFilter}
+                onChange={handleChange}
                 id="filter"
-                value={value}
+                value={filter.value}
             />
         </BoxFilter>
         
@@ -24,7 +33,7 @@ return (
 }
 
 
-Filter.propTypes = {
-    handleChangeFilter: PropTypes.func.isRequired,
-    value: PropTypes.string.isRequired,
-}
+// Filter.propTypes = {
+//     handleChangeFilter: PropTypes.func.isRequired,
+//     value: PropTypes.string.isRequired,
+// }
